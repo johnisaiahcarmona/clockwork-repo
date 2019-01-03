@@ -24,4 +24,8 @@
   <ItemGroup>
     <Compile Remove="Controllers\HomeController.cs" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="clockwork - Copy.db" />
+  </ItemGroup>
 </Project>
