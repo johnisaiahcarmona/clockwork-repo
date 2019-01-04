@@ -1,21 +1,46 @@
 ﻿<script>
-function UserAction() {
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            document.getElementById("output").innerHTML = this.responseText;
-        }
-    };
-    xhttp.open("GET", "http://localhost:64439/api/currenttime", true);
-    xhttp.setRequestHeader("Content-type", "application/json");
-    xhttp.send();
+    function FormatDatetime(stringDatetime) {
+        var datetime = new Date(Date.parse(stringDatetime));
+        return ("0" + datetime.getDate()).slice(-2) + "-" + ("0" + (datetime.getMonth() + 1)).slice(-2) + "-" +
+            datetime.getFullYear() + " " + ("0" + datetime.getHours()).slice(-2) + ":" + ("0" + datetime.getMinutes()).slice(-2);
+    }
 
-}
+    function UserAction() {
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                var jsonResponse = JSON.parse(this.responseText);
+
+                document.getElementById("query_id").innerHTML = jsonResponse.currentTimeQueryId;
+                document.getElementById("default_datetime").innerHTML = FormatDatetime(jsonResponse.time.substring(0, jsonResponse.time.length - 6));
+                document.getElementById("utc_datetime").innerHTML = FormatDatetime(jsonResponse.utcTime.substring(0, jsonResponse.utcTime.length - 1));
+                document.getElementById("client_ip").innerHTML = jsonResponse.clientIp;
+                document.getElementById("full_response").innerHTML = this.responseText;
+
+                document.getElementById("result").style["display"] = "block";
+            }
+        };
+        xhttp.open("GET", "http://localhost:64439/api/currenttime", true);
+        xhttp.setRequestHeader("Content-type", "application/json");
+        xhttp.send();
+    }
 </script>
-
-<h2>AWH Clockwork Project @ViewData["Version"] on @ViewData["Runtime"]!</h2>
-
-
-<button type="submit" onclick="UserAction()">Get the time</button>
-
-<p id="output"></p>
+<div class="container">
+    <div class="card center main-card">
+        <h1>AWH Clockwork Project @ViewData["Version"] on @ViewData["Runtime"]!</h1>
+        <button class="btn large" type="submit" onclick="UserAction()"><span class="valign-center"><i class="material-icons">update</i> Get the time</span></button>
+        <div id="result" class="card left" style="display:none">
+            <h2>Result</h2>
+            <small>QUERY ID</small>
+            <h2 class="sub-headed"><span class="valign-center"><i class="material-icons">local_offer</i> <span id="query_id"></span></span></h2>
+            <small>DEFAULT DATE TIME</small>
+            <h2 class="sub-headed"><span class="valign-center"><i class="material-icons">access_time</i> <span id="default_datetime"></span></span></h2>
+            <small>UTC DATE TIME</small>
+            <h2 class="sub-headed"><span class="valign-center"><i class="material-icons">language</i> <span id="utc_datetime"></span></span></h2>
+            <small>CLIENT IP ADDRESS</small>
+            <h2 class="sub-headed"><span class="valign-center"><i class="material-icons">room</i> <span id="client_ip"></span></span></h2>
+            <small>JSON RESULT</small>
+            <code><small id="full_response"></small></code>
+        </div>
+    </div>
+</div>
